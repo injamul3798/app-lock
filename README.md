@@ -1,22 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# App Lock
 
-# Run and deploy your AI Studio app
+Privacy-first Android app locker. It locks selected apps with a pattern, PIN, or fingerprint, and it never talks to a server.
 
-This contains everything you need to run your app locally.
+## Privacy
 
-View your app in AI Studio: https://ai.studio/apps/6be2041c-6c74-4537-9b3f-15153210aca6
+Confirmed from the app source, manifest, and tests:
 
-## Run Locally
+- **Offline.** The app requests only biometric and boot-completed permissions. It does not request `INTERNET` or any other network permission. Network libraries (OkHttp, Retrofit, Firebase) are not included, and the app code makes no HTTP calls.
+- **Nothing leaves the device.** There is no analytics, crash reporting, ads, accounts, or cloud sync. Cloud backup and device transfer are disabled (`android:allowBackup="false"`, with file, preferences, and database data excluded).
+- **No remote logging or tracing.** The app does not call Android `Log`, and it does not ship a telemetry or tracing SDK.
+- **Screen content stays private.** The accessibility service listens only for foreground window changes so it can tell which app opened. `canRetrieveWindowContent` is false, so it does not read screen text, messages, or keystrokes.
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+## What is stored on the device
 
+The app does keep one local file so the lock still works after you close it. That file is `applock_vault.enc` in the app's private storage. It is encrypted with AES-256-GCM. The key lives in the Android Keystore and is not written into the file.
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+The vault holds only what the lock needs:
+
+- Lock settings (method, biometric on/off, auto-lock, screen-capture protection)
+- The list of locked app package names
+- A salted hash of your pattern or PIN, never the pattern or PIN itself (PBKDF2-HMAC-SHA256, 120,000 iterations, 16-byte random salt)
+- A local intrusion log of failed unlock attempts (time, app name, package, attempt count, and method), capped at 50 entries
+
+That intrusion log stays inside the encrypted vault. You can clear it in the app. It is not uploaded anywhere.
+
+## Run locally
+
+**Prerequisites:** [Android Studio](https://developer.android.com/studio)
+
+1. Open Android Studio.
+2. Select **Open** and choose this project directory.
+3. Let Android Studio finish the Gradle import.
+4. Run the app on an emulator or a physical device.
+5. Complete setup, choose the apps to lock, then enable **App Lock Protection Service** in Android Accessibility settings. Protection does not start until that service is on.
