@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">App Lock</string>
+    <string name="accessibility_service_label">App Lock Protection Service</string>
+    <string name="accessibility_service_description">Detects when a protected app opens so App Lock can require your pattern, PIN, or fingerprint. App Lock never reads screen content, messages, or keystrokes, and operates 100% offline.</string>
+    <string name="welcome_subtitle">Keep your apps private and secure</string>
+    <string name="get_started">Get Started</string>
+    <string name="choose_lock_method">Choose Lock Method</string>
+    <string name="choose_lock_method_sub">Select how you want to lock your apps</string>
+    <string name="draw_pattern">Draw Pattern</string>
+    <string name="confirm_pattern">Confirm Pattern</string>
+    <string name="connect_dots_hint">Connect at least 4 dots</string>
+    <string name="redraw_pattern_hint">Draw the same pattern again to confirm</string>
+    <string name="create_pin">Create PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pin_hint">Enter a 4 to 6 digit PIN code</string>
+    <string name="confirm_pin_hint">Re-enter your PIN code to confirm</string>
+    <string name="select_apps">Select Apps</string>
+    <string name="select_apps_sub">Choose the apps you want to lock</string>
+    <string name="search_apps_hint">Search apps…</string>
+    <string name="all_set_title">All Set!</string>
+    <string name="all_set_subtitle">Your selected apps are now protected with App Lock.</string>
+    <string name="great">Great!</string>
+    <string name="unlock_to_continue">Unlock to Continue</string>
+    <string name="use_fingerprint">Use Fingerprint</string>
+    <string name="privacy_priority_title">Your privacy is our priority</string>
+    <string name="privacy_priority_subtitle">No data is collected or shared.</string>
+</resources>
