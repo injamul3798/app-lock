@@ -1,35 +1,83 @@
-# App Lock
+<h1 align="center">App Lock</h1>
 
-Privacy-first Android app locker. It locks selected apps with a pattern, PIN, or fingerprint, and it never talks to a server.
+<p align="center">
+  Lock the apps you choose with a pattern, PIN, or fingerprint.<br>
+  The locker stays on the phone. No account. No tracking.
+</p>
+
+<p align="center">
+  <a href="#walkthrough">Walkthrough</a>
+  &nbsp;·&nbsp;
+  <a href="#privacy">Privacy</a>
+  &nbsp;·&nbsp;
+  <a href="#on-device-vault">On-device vault</a>
+  &nbsp;·&nbsp;
+  <a href="#run-locally">Run locally</a>
+</p>
+
+## Walkthrough
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/01-welcome.jpg" width="250" alt="Welcome screen"><br><br>
+      <b>1. Get started</b><br>
+      <sub>Open the app. Nothing to sign up for.</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/02-choose-method.jpg" width="250" alt="Choose pattern, PIN, or fingerprint"><br><br>
+      <b>2. Choose a lock</b><br>
+      <sub>Pattern, PIN, or fingerprint.</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/03-select-apps.jpg" width="250" alt="Search the app list"><br><br>
+      <b>3. Browse apps</b><br>
+      <sub>Search, or filter locked and system apps.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/04-apps-selected.jpg" width="250" alt="Apps selected to lock"><br><br>
+      <b>4. Lock your picks</b><br>
+      <sub>Turn on each app you want protected.</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/05-home.jpg" width="250" alt="Home screen with protection active"><br><br>
+      <b>5. Protection on</b><br>
+      <sub>See locked apps and failed attempts.</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <img src="docs/screenshots/06-manage-apps.jpg" width="250" alt="Manage locked apps"><br><br>
+      <b>6. Manage later</b><br>
+      <sub>Add or remove apps whenever you want.</sub>
+    </td>
+  </tr>
+</table>
 
 ## Privacy
 
-Confirmed from the app source, manifest, and tests:
+| | | |
+| --- | --- | --- |
+| **Offline** | **Stays on the phone** | **Screen stays private** |
+| No `INTERNET` permission. OkHttp, Retrofit, and Firebase are not in the app, and the code makes no HTTP calls. | No analytics, crash reporting, ads, or accounts. Cloud backup and device transfer are off. | The accessibility service only sees which app opened. It does not read screen text, messages, or keystrokes. |
 
-- **Offline.** The app requests only biometric and boot-completed permissions. It does not request `INTERNET` or any other network permission. Network libraries (OkHttp, Retrofit, Firebase) are not included, and the app code makes no HTTP calls.
-- **Nothing leaves the device.** There is no analytics, crash reporting, ads, accounts, or cloud sync. Cloud backup and device transfer are disabled (`android:allowBackup="false"`, with file, preferences, and database data excluded).
-- **No remote logging or tracing.** The app does not call Android `Log`, and it does not ship a telemetry or tracing SDK.
-- **Screen content stays private.** The accessibility service listens only for foreground window changes so it can tell which app opened. `canRetrieveWindowContent` is false, so it does not read screen text, messages, or keystrokes.
+Checked against the manifest, the app source, and the unit test that rejects an `INTERNET` permission.
 
-## What is stored on the device
+## On-device vault
 
-The app does keep one local file so the lock still works after you close it. That file is `applock_vault.enc` in the app's private storage. It is encrypted with AES-256-GCM. The key lives in the Android Keystore and is not written into the file.
+One file, `applock_vault.enc`, sits in the app's private storage so the lock still works after you leave. It is encrypted with AES-256-GCM. The key is in the Android Keystore.
 
-The vault holds only what the lock needs:
-
-- Lock settings (method, biometric on/off, auto-lock, screen-capture protection)
-- The list of locked app package names
-- A salted hash of your pattern or PIN, never the pattern or PIN itself (PBKDF2-HMAC-SHA256, 120,000 iterations, 16-byte random salt)
-- A local intrusion log of failed unlock attempts (time, app name, package, attempt count, and method), capped at 50 entries
-
-That intrusion log stays inside the encrypted vault. You can clear it in the app. It is not uploaded anywhere.
+| Kept in the vault | How |
+| --- | --- |
+| Lock settings | Method, fingerprint on or off, auto-lock, screen-capture protection |
+| Locked apps | Package names only |
+| Pattern or PIN | Salted PBKDF2-HMAC-SHA256 hash, 120,000 iterations. The pattern and PIN themselves are not saved. |
+| Failed attempts | Time, app name, package, attempt count, and method. Capped at 50. Clear them in the app. They are not uploaded. |
 
 ## Run locally
 
-**Prerequisites:** [Android Studio](https://developer.android.com/studio)
+**Prerequisite:** [Android Studio](https://developer.android.com/studio)
 
-1. Open Android Studio.
-2. Select **Open** and choose this project directory.
-3. Let Android Studio finish the Gradle import.
-4. Run the app on an emulator or a physical device.
-5. Complete setup, choose the apps to lock, then enable **App Lock Protection Service** in Android Accessibility settings. Protection does not start until that service is on.
+1. Open this folder in Android Studio and let Gradle finish importing.
+2. Run the app on an emulator or a phone.
+3. Finish setup, choose the apps to lock, then turn on **App Lock Protection Service** in Android Accessibility settings. Protection starts only after that service is on.
